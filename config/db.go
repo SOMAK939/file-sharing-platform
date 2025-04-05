@@ -12,7 +12,7 @@ var DB *sql.DB
 
 func ConnectDB() {
 	var err error
-	dsn := os.Getenv("DATABASE_URL") // Read from .env file
+	dsn := os.Getenv("DATABASE_URL") 
 	DB, err = sql.Open("pgx", dsn)
 	if err != nil {
 		panic(err)

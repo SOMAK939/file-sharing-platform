@@ -115,7 +115,7 @@ func UploadFile(db *sql.DB, uploadQueue chan string) http.HandlerFunc {
 		// Get JWT token from Authorization header
 		authHeader := r.Header.Get("Authorization")
 		if authHeader == "" {
-			http.Error(w, "❌ Unauthorized: Missing token", http.StatusUnauthorized)
+			http.Error(w, " Unauthorized: Missing token", http.StatusUnauthorized)
 			return
 		}
 
@@ -124,7 +124,7 @@ func UploadFile(db *sql.DB, uploadQueue chan string) http.HandlerFunc {
 		userID, err := appConfig.ValidateJWT(tokenStr)
 		if err != nil {
 			fmt.Println("JWT Validation Error:", err) // 🔍 Debugging line
-			http.Error(w, "❌ Unauthorized: Invalid token", http.StatusUnauthorized)
+			http.Error(w, "Unauthorized: Invalid token", http.StatusUnauthorized)
 			return
 		}
 		fmt.Println("Extracted User ID:", userID) // 🔍 Debugging line
@@ -165,7 +165,7 @@ func UploadFile(db *sql.DB, uploadQueue chan string) http.HandlerFunc {
 			// Start a database transaction
 	tx, err := db.Begin()
 	if err != nil {
-		http.Error(w, "❌ Failed to start transaction", http.StatusInternalServerError)
+		http.Error(w, " Failed to start transaction", http.StatusInternalServerError)
 		return
 	}
 	defer tx.Rollback() // Rollback in case of failure
@@ -182,20 +182,20 @@ func UploadFile(db *sql.DB, uploadQueue chan string) http.HandlerFunc {
 		filename, filePath, time.Now(), s3URL, userID)
 
 	if err != nil {
-		log.Println("❌ Database insert error:", err) // Log the actual SQL error
+		log.Println(" Database insert error:", err) // Log the actual SQL error
 		http.Error(w, "Database insert failed", http.StatusInternalServerError)
 		return
 	}
 
 	// Commit the transaction
 	if err = tx.Commit(); err != nil {
-		http.Error(w, "❌ Failed to commit transaction", http.StatusInternalServerError)
+		http.Error(w, " Failed to commit transaction", http.StatusInternalServerError)
 		return
 	}
 
 	// Respond
 	json.NewEncoder(w).Encode(map[string]string{
-		"message": "✅ File uploaded successfully!",
+		"message": " File uploaded successfully",
 		"url":     s3URL,
 	})
 	
@@ -213,7 +213,7 @@ func UploadToS3(file multipart.File, fileName string) (string, error) {
 	// Load AWS Config
 	cfg, err := awsConfig.LoadDefaultConfig(context.TODO(), awsConfig.WithRegion(os.Getenv("AWS_REGION")))
 	if err != nil {
-		log.Printf("❌ AWS Config Load Error: %v\n", err)
+		log.Printf("AWS Config Load Error: %v\n", err)
 		return "", err
 	}
 
@@ -228,7 +228,7 @@ func UploadToS3(file multipart.File, fileName string) (string, error) {
 		
 	})
 	if err != nil {
-		log.Printf("❌ S3 Upload Error: %v\n", err)
+		log.Printf(" S3 Upload Error: %v\n", err)
 		return "", err
 	}
 
@@ -238,7 +238,7 @@ func UploadToS3(file multipart.File, fileName string) (string, error) {
 		os.Getenv("AWS_REGION"),
 		fileName)
 	
-	log.Printf("✅ File uploaded to S3: %s\n", fileURL)
+	log.Printf(" File uploaded to S3: %s\n", fileURL)
 	return fileURL, nil
 }
 
@@ -273,7 +273,7 @@ func GetUploadedFiles(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		rows, err := db.Query("SELECT id, filename, file_url, uploaded_at FROM files")
 		if err != nil {
-			log.Println("❌ Database query failed:", err)
+			log.Println(" Database query failed:", err)
 			http.Error(w, "Database query failed", http.StatusInternalServerError)
 			return
 		}
@@ -288,7 +288,7 @@ func GetUploadedFiles(db *sql.DB) http.HandlerFunc {
 			var uploadedAt sql.NullTime
 
 			if err := rows.Scan(&id, &filename, &fileURL, &uploadedAt); err != nil {
-				log.Println("❌ Error scanning row:", err)
+				log.Println(" Error scanning row:", err)
 				http.Error(w, "Error scanning row", http.StatusInternalServerError)
 				return
 			}
@@ -350,7 +350,7 @@ func SearchFiles(db *sql.DB, RDB *redis.Client) http.HandlerFunc {
 		for rows.Next() {
 			var file FileMetadata
 			if err := rows.Scan(&file.ID, &file.Filename, &file.URL); err != nil {
-				log.Println("❌ Error scanning row:", err)
+				log.Println(" Error scanning row:", err)
 				continue
 			}
 			results = append(results, file)
@@ -440,7 +440,7 @@ func GetUserFiles(db *sql.DB, RDB *redis.Client) http.HandlerFunc {
 		// Get JWT token from Authorization header
 		authHeader := r.Header.Get("Authorization")
 		if authHeader == "" {
-			http.Error(w, "❌ Unauthorized: Missing token", http.StatusUnauthorized)
+			http.Error(w, " Unauthorized: Missing token", http.StatusUnauthorized)
 			return
 		}
 
@@ -448,7 +448,7 @@ func GetUserFiles(db *sql.DB, RDB *redis.Client) http.HandlerFunc {
 		tokenStr := strings.TrimPrefix(authHeader, "Bearer ")
 		userID, err := appConfig.ValidateJWT(tokenStr)
 		if err != nil {
-			http.Error(w, "❌ Unauthorized: Invalid token", http.StatusUnauthorized)
+			http.Error(w, "Unauthorized: Invalid token", http.StatusUnauthorized)
 			return
 		}
 
@@ -464,8 +464,8 @@ func GetUserFiles(db *sql.DB, RDB *redis.Client) http.HandlerFunc {
 		// Fetch user files from DB
 		rows, err := db.Query("SELECT id, filename, file_url FROM files WHERE owner_id = $1 ORDER BY id DESC", userID)
 		if err != nil {
-			http.Error(w, "❌ Database error", http.StatusInternalServerError)
-			log.Println("❌ Database query error:", err)  // Debugging log
+			http.Error(w, " Database error", http.StatusInternalServerError)
+			log.Println(" Database query error:", err)  // Debugging log
 			return
 		}
 		defer rows.Close()
@@ -474,7 +474,7 @@ func GetUserFiles(db *sql.DB, RDB *redis.Client) http.HandlerFunc {
 		for rows.Next() {
 			var file FileMetadata
 			if err := rows.Scan(&file.ID, &file.Filename, &file.URL); err != nil {
-				http.Error(w, "❌ Error scanning row", http.StatusInternalServerError)
+				http.Error(w, " Error scanning row", http.StatusInternalServerError)
 				return
 			}
 			files = append(files, file)

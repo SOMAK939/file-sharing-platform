@@ -24,10 +24,10 @@ func InitRedis() {
 	ctx := context.Background()
 	_, err := RDB.Ping(ctx).Result()
 	if err != nil {
-		fmt.Println("❌ Redis connection failed:", err)
+		fmt.Println(" Redis connection failed:", err)
 		return
 	}
-	fmt.Println("✅ Connected to Redis Cloud!")
+	fmt.Println("Connected to Redis Cloud!")
 }
 // Set key-value pair in Redis with optional expiration
 func SetCache(key, value string, expiration int) error {

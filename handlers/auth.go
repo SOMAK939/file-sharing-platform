@@ -37,14 +37,14 @@ func RegisterUser(db *sql.DB) http.HandlerFunc {
 			return
 		}
 
-		// Hash password
+		
 		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(creds.Password), bcrypt.DefaultCost)
 		if err != nil {
 			http.Error(w, "Error hashing password", http.StatusInternalServerError)
 			return
 		}
 
-		// Insert user into database
+		
 		_, err = db.Exec("INSERT INTO users (email, password) VALUES ($1, $2)", creds.Email, string(hashedPassword))
 		if err != nil {
 			http.Error(w, "User already exists", http.StatusConflict)

@@ -12,15 +12,15 @@ import (
 // ValidateJWT extracts the user ID from a JWT token
 func ValidateJWT(tokenString string) (string, error) {
     secret := os.Getenv("JWT_SECRET")
-    fmt.Println("Incoming Token:", tokenString)  // Debug
-    fmt.Println("JWT Secret Used for Validation:", secret)  // Debug
+    fmt.Println("Incoming Token:", tokenString)  
+    fmt.Println("JWT Secret Used for Validation:", secret)  
 
     token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
         return []byte(secret), nil
     })
 
     if err != nil {
-        fmt.Println("JWT Validation Error:", err)  // 🔴 Print exact error
+        fmt.Println("JWT Validation Error:", err)  
         return "", err
     }
 

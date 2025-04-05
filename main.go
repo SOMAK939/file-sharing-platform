@@ -22,7 +22,7 @@ func main() {
 
 	// Load environment variables
 	if err := godotenv.Load(); err != nil {
-		log.Println("⚠️  Warning: No .env file found")
+		log.Println("  Warning: No .env file found")
 	}
     
 	// Initialize Redis
@@ -31,15 +31,15 @@ func main() {
 	// Connect to PostgreSQL
 	db, err := sql.Open("pgx", os.Getenv("DATABASE_URL"))
 	if err != nil {
-		log.Fatal("❌ Unable to connect to database:", err)
+		log.Fatal(" Unable to connect to database:", err)
 	}
 	defer db.Close()
 
 	// Verify DB connection
 	if err := db.Ping(); err != nil {
-		log.Fatal("❌ Database ping failed:", err)
+		log.Fatal(" Database ping failed:", err)
 	} else {
-		fmt.Println("✅ Connected to PostgreSQL!")
+		fmt.Println(" Connected to PostgreSQL!")
 	}
 
 		
@@ -70,6 +70,6 @@ func main() {
 
 
 	// Start server
-	fmt.Println("🚀 Server running on port 8080...")
+	fmt.Println(" Server running on port 8080...")
 	log.Fatal(http.ListenAndServe(":8080", router))
 }

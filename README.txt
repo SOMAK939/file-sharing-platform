@@ -82,11 +82,16 @@ go: go.mod requires go >= 1.24.1 (running go 1.24.0; GOTOOLCHAIN=local)
 
 
 ## Future Improvements
-- Implement WebSocket-based real-time notifications for upload completion.
+- Implementation of a WebSocket-based real-time notifications for upload completion.
 
-- Deploy a fully containerized version using Docker.
+- Deployment of  a fully containerized version using Docker.
 
-- Deploy it over EC2 via CLI
+- Deployment over EC2 via CLI
+
+
+Note:
+The uploads folder contains all the files uploaded during testing of the routes.
+
 
 
 

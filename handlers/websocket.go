@@ -18,21 +18,21 @@ var mu sync.Mutex
 func WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		fmt.Println("❌ WebSocket upgrade failed:", err)
+		fmt.Println(" WebSocket upgrade failed:", err)
 		http.Error(w, "Failed to upgrade WebSocket", http.StatusInternalServerError)
 		return
 	}
 	defer conn.Close()
 
-	fmt.Println("✅ WebSocket connection established")
+	fmt.Println(" WebSocket connection established")
 
 	for {
 		_, msg, err := conn.ReadMessage()
 		if err != nil {
-			fmt.Println("❌ WebSocket error:", err)
+			fmt.Println(" WebSocket error:", err)
 			break
 		}
-		fmt.Printf("📩 Received message: %s\n", msg)
+		fmt.Printf(" Received message: %s\n", msg)
 	}
 }
 
@@ -40,7 +40,7 @@ func NotifyUploadComplete(filename, userID string) {
     mu.Lock()
     defer mu.Unlock()
 
-    message := fmt.Sprintf("✅ File %s has been uploaded successfully!", filename)
+    message := fmt.Sprintf("File %s has been uploaded successfully", filename)
     for client := range clients {
         err := client.WriteMessage(websocket.TextMessage, []byte(message))
         if err != nil {

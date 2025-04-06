@@ -1,48 +1,43 @@
 package config
 
 import (
-	"context"
-	"fmt"
-	
-	"os"
+    "context"
+    "fmt"
+    "log"
+    "os"
+    "strings"
 
-	
-	"github.com/redis/go-redis/v9"
+    "github.com/joho/godotenv"
+    "github.com/redis/go-redis/v9"
 )
 
 var RDB *redis.Client
+var Ctx = context.Background()
 
-// Initialize Redis connection
 func InitRedis() {
-	RDB = redis.NewClient(&redis.Options{
-		Addr:     os.Getenv("REDIS_HOST") + ":" + os.Getenv("REDIS_PORT"),
-		Password: os.Getenv("REDIS_PASSWORD"), // Leave empty if no password
-		DB:       0,  // Default DB
-	})
+    // Load env vars
+    err := godotenv.Load()
+    if err != nil {
+        log.Fatal("Error loading .env file")
+    }
 
-	// Check connection
-	ctx := context.Background()
-	_, err := RDB.Ping(ctx).Result()
-	if err != nil {
-		fmt.Println(" Redis connection failed:", err)
-		return
-	}
-	fmt.Println("Connected to Redis Cloud!")
-}
-// Set key-value pair in Redis with optional expiration
-func SetCache(key, value string, expiration int) error {
-	ctx := context.Background()
-	return RDB.Set(ctx, key, value, 0).Err()
-}
+    host := strings.TrimSpace(os.Getenv("REDIS_HOST"))
+    port := strings.TrimSpace(os.Getenv("REDIS_PORT"))
+    password := strings.TrimSpace(os.Getenv("REDIS_PASSWORD"))
 
-// Get value from Redis cache
-func GetCache(key string) (string, error) {
-	ctx := context.Background()
-	return RDB.Get(ctx, key).Result()
-}
+    addr := fmt.Sprintf("%s:%s", host, port)
 
-// Delete a key from Redis cache
-func DeleteCache(key string) error {
-	ctx := context.Background()
-	return RDB.Del(ctx, key).Err()
+    RDB = redis.NewClient(&redis.Options{
+        Addr:     addr,
+        Password: password,
+        DB:       0,
+    })
+
+    // Test the connection
+    pong, err := RDB.Ping(Ctx).Result()
+    if err != nil {
+        log.Fatalf("Redis connection failed: %v", err)
+    }
+
+    fmt.Println("Redis connected:", pong)
 }

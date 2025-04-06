@@ -22,8 +22,8 @@
    - Enabled range-based retrieval for efficient large file downloads.
 
 ### 4. **Caching for Performance Optimization**
-   - Implemented Redis Cloud(or in-memory cache) for frequently accessed file metadata.
-   - Reduced database queries by caching responses for common requests.
+   - Implemented Redis using WSL
+   - Used Redis to cache frequently accessed data (e.g., user info, file metadata).
    
 
 ### 5. **Rate Limiting & Security**
@@ -59,25 +59,24 @@
    - Initial queries to PostgreSQL were slow for frequently accessed files.
    - Solution: Added Redis caching to speed up repeated queries.
 
-### 5.**REDIS**
-- Redis was not properly configured.
-- Since Redis  is meant for Linux ,i tried using Redis Cloud.But faced difficulty configuring Redis CLI. Downloaded Redis CLI but the .exe  file was closing abruptly showing some errors.
-- Solution:Can implement Redis with WSL in future commits.
 
 
-### 6.**Docker**
+
+### 5.**Docker**
 - Docker was not properly configured.
 - Difficulty faced: With the golang version installation.
 - My go.mod file required Go 1.24.1, but my Docker image was using Go 1.21.13.
 - After fixing the above issue Go app was still failing to connect to the database.
 ---
 
-### 7.**Connecting to EC2 via CLI**
+### 6.**Connecting to EC2 via CLI**
 - Difficulty faced:
 go: go.mod requires go >= 1.24.1 (running go 1.24.0; GOTOOLCHAIN=local)
 
 --Fixed it by installing Go1.24.1 .System was using Go1.24.0
 --app binary was missing
+
+
 
 
 

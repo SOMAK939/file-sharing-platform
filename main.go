@@ -18,7 +18,7 @@ import (
 
 func main() {
 
-	fmt.Println("Loaded JWT_SECRET:", os.Getenv("JWT_SECRET"))
+	
 
 	// Load environment variables
 	if err := godotenv.Load(); err != nil {
